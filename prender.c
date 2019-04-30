@@ -184,7 +184,14 @@ static void DrawScreen()
             // Find an intersection between the wall and the approximate edges of player's view
             struct xy i1 = Intersect(tx1,tz1,tx2,tz2, -nearside,nearz, -farside,farz);
             struct xy i2 = Intersect(tx1,tz1,tx2,tz2,  nearside,nearz,  farside,farz);
-            if(tz1 < nearz) { if(i1.y > 0) { tx1 = i1.x; tz1 = i1.y; } else { tx1 = i2.x; tz1 = i2.y; } }
+            if(tz1 < nearz) { 
+                if(i1.y > 0) { 
+                    tx1 = i1.x; tz1 = i1.y; 
+                } else { 
+                    tx1 = i2.x; tz1 = i2.y; 
+                } 
+            }
+
             if(tz2 < nearz) { if(i1.y > 0) { tx2 = i1.x; tz2 = i1.y; } else { tx2 = i2.x; tz2 = i2.y; } }
         }
         /* Do perspective transformation */

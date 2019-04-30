@@ -107,10 +107,34 @@ void DrawScreen() {
 
         // if one endpoint is behind the player, clip it to frustrum
         if (x1_b <= 0 || x2_b <= 0) {
-            x1_b = intersectX(x1_b, x2_b, y1_b, y2_b, 0, 100, 0, 100);
-            y1_b = intersectY(x1_b, x2_b, y1_b, y2_b, 0, 100, 0, 100);
-            x2_b = intersectX(x1_b, x2_b, y1_b, y2_b, 0, 100, 0, -100);
-            y2_b = intersectY(x1_b, x2_b, y1_b, y2_b, 0, 100, 0, -100);
+            double x1 = intersectX(x1_b, x2_b, y1_b, y2_b, 0, 100, 0, 100);
+            double y1 = intersectY(x1_b, x2_b, y1_b, y2_b, 0, 100, 0, 100);
+            double x2 = intersectX(x1_b, x2_b, y1_b, y2_b, 0, 100, 0, -100);
+            double y2 = intersectY(x1_b, x2_b, y1_b, y2_b, 0, 100, 0, -100);
+
+            // if x1 is the endpoint that needs to be clipped
+            if (x1_b <= 0) {
+                // clip to the intersecting point which is inside the frustrum
+                if (y1 > 0) {
+                    x1_b = x1;
+                    y1_b = y1;
+                } else {
+                    x1_b = x2; 
+                    y1_b = y2;
+                }
+            }
+
+            // if x2 is the endpoint that needs to be clipped
+            if (x2_b <= 0) {
+                // clip to the intersecting point which is inside the frustrum
+                if (y1 > 0) {
+                    x2_b = x1;
+                    y2_b = y1;
+                } else {
+                    x2_b = x2; 
+                    y2_b = y2;
+                }
+            }
         }
         
         //scale a line based on it's distance (now represented by x coordinate) from the player
