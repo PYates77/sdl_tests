@@ -93,20 +93,28 @@ void DrawScreen() {
         // TODO frustrum culling
         
         //scale a line based on it's distance (now represented by x coordinate) from the player
+#if 0
         float s_1 = hfov / x1_r;
         float s_2 = hfov / x2_r;
 
         int x1 = (W/2) - (int)(s_1 * y1_r);
         int x2 = (W/2) - (int)(s_2 * y2_r);
         printf("x1_r = %f, x2_r = %f, s1 = %f, s2 = %f, x1 = %d, x2 = %d\n", x1_r, x2_r, s_1, s_2, x1, x2);
+#endif 
 
         // apply offset of origin in top-left corner
         x1_t = x1_r + o_x;
         y1_t = y1_r + o_y;
         x2_t = x2_r + o_x;
         y2_t = y2_r + o_y;
-        line(x1, x2, H/2, H/2, w.color);
+        //line(x1, x2, H/2, H/2, w.color);
+        line(x1_t, x2_t, y1_t, y2_t, w.color);
     }
+
+    // DEBUG draw the 2d frustrum 
+    line(o_x, o_x+100, o_y, o_y+100, 0x555555);
+    line(o_x, o_x+100, o_y, o_y-100, 0x555555);
+
 
     // draw player (at the origin)
     square(o_x - 5, o_x + 5, o_y - 5, o_y + 5, 0xFFFFFF);
