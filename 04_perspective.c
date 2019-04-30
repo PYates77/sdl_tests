@@ -62,6 +62,21 @@ void ClearScreen() {
     }
 }
 
+double intersectX(double x1, double x2, double y1, double y2, double x3, double x4, double y3, double y4) {
+    // find the x coordinate of two intersecting lines
+    // using two lines as defined by points and intersection formula
+    double num = (x1*y2-y1*x2)*(x3-x4) - (x1-x2)*(x3*y4 - y3*x4);
+    double denom = (x1-x2)*(y3-y4) - (y1-y2)*(x3-x4);
+    return num / denom;
+}
+double intersectY(double x1, double x2, double y1, double y2, double x3, double x4, double y3, double y4) {
+    // find the x coordinate of two intersecting lines
+    // using two lines as defined by points and intersection formula
+    double num = (x1*y2-y1*x2)*(y3-y4) - (y1-y2)*(x3*y4 - y3*x4);
+    double denom = (x1-x2)*(y3-y4) - (y1-y2)*(x3-x4);
+    return num / denom;
+}
+
 void DrawScreen() {
     ClearScreen();
 
@@ -74,23 +89,29 @@ void DrawScreen() {
         struct wall w = walls[i];
 
         // find coordinates in terms of their offset from player
-        double x1_t = w.x1 - p_x;
-        double y1_t = w.y1 - p_y;
-        double x2_t = w.x2 - p_x;
-        double y2_t = w.y2 - p_y;
+        double x1_a = w.x1 - p_x;
+        double y1_a = w.y1 - p_y;
+        double x2_a = w.x2 - p_x;
+        double y2_a = w.y2 - p_y;
 
         // apply rotation matrix cross product 
         // (a positive rotation of the player corresponse
         // to a negative rotation of the world)
-        double x1_r = x1_t*cos(-p_t) - y1_t*sin(-p_t);
-        double y1_r = x1_t*sin(-p_t) + y1_t*cos(-p_t);
-        double x2_r = x2_t*cos(-p_t) - y2_t*sin(-p_t);
-        double y2_r = x2_t*sin(-p_t) + y2_t*cos(-p_t);
+        double x1_b = x1_a*cos(-p_t) - y1_a*sin(-p_t);
+        double y1_b = x1_a*sin(-p_t) + y1_a*cos(-p_t);
+        double x2_b = x2_a*cos(-p_t) - y2_a*sin(-p_t);
+        double y2_b = x2_a*sin(-p_t) + y2_a*cos(-p_t);
 
         // don't draw lines that are behind the player
-        if (x1_r <= 0 && x2_r <= 0) continue;
+        if (x1_b <= 0 && x2_b <= 0) continue;
 
-        // TODO frustrum culling
+        // if one endpoint is behind the player, clip it to frustrum
+        if (x1_b <= 0 || x2_b <= 0) {
+            x1_b = intersectX(x1_b, x2_b, y1_b, y2_b, 0, 100, 0, 100);
+            y1_b = intersectY(x1_b, x2_b, y1_b, y2_b, 0, 100, 0, 100);
+            x2_b = intersectX(x1_b, x2_b, y1_b, y2_b, 0, 100, 0, -100);
+            y2_b = intersectY(x1_b, x2_b, y1_b, y2_b, 0, 100, 0, -100);
+        }
         
         //scale a line based on it's distance (now represented by x coordinate) from the player
 #if 0
@@ -103,12 +124,12 @@ void DrawScreen() {
 #endif 
 
         // apply offset of origin in top-left corner
-        x1_t = x1_r + o_x;
-        y1_t = y1_r + o_y;
-        x2_t = x2_r + o_x;
-        y2_t = y2_r + o_y;
+        double x1 = x1_b + o_x;
+        double y1 = y1_b + o_y;
+        double x2 = x2_b + o_x;
+        double y2 = y2_b + o_y;
         //line(x1, x2, H/2, H/2, w.color);
-        line(x1_t, x2_t, y1_t, y2_t, w.color);
+        line(x1, x2, y1, y2, w.color);
     }
 
     // DEBUG draw the 2d frustrum 
